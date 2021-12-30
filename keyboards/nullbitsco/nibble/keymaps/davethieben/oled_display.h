@@ -25,10 +25,8 @@ typedef enum {
 
 uint16_t oled_timer;
 oled_mode_t oled_mode;
-char* layer_name;
 
 void set_oled_mode(oled_mode_t mode);
-void set_layer_name(const char* name);
 
 void process_record_encoder_oled(uint16_t keycode);
 

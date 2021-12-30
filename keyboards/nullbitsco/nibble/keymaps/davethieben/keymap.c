@@ -57,41 +57,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 // clang-format on
 
-static const char PROGMEM layer_names_str[3][10] = {
-    "MAIN",
-    "NAV",
-    "MEDIA",
-};
-
-
 #ifdef OLED_ENABLE
-oled_rotation_t oled_init_user(oled_rotation_t rotation)
-{
+oled_rotation_t oled_init_user(oled_rotation_t rotation) {
     oled_timer = timer_read32();
     set_oled_mode(OLED_MODE_IDLE);
     return OLED_ROTATION_0;
 }
 
-bool oled_task_user(void)
-{
-    if (timer_elapsed(oled_timer) >= 3000)
-    {
+bool oled_task_user(void) {
+    if (timer_elapsed(oled_timer) >= 3000) {
         set_oled_mode(OLED_MODE_IDLE);
     }
-
-    if (layer_state_is(1))
-    {
-        set_layer_name(layer_names_str[1]);
-    }
-    else if (layer_state_is(2))
-    {
-        set_layer_name(layer_names_str[2]);
-    }
-    else
-    {
-        set_layer_name(layer_names_str[0]);
-    }
-
     render_frame();
     return false;
 }
@@ -218,19 +194,6 @@ bool encoder_update_user(uint8_t index, bool clockwise)
         {
             tap_code(KC_WH_U); // mouse wheel up
         }
-
-        // if (index == 0) {
-        //     if (clockwise) {
-        //         tap_code(KC_PGDN);
-        //     } else {
-        //         tap_code(KC_PGUP);
-        //     }
-        // } else
-        // if (clockwise) {
-        //     tap_code(KC_DOWN);
-        // } else {
-        //     tap_code(KC_UP);
-        // }
     }
 
     return false;

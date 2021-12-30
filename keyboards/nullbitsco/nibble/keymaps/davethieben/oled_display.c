@@ -36,10 +36,6 @@ void set_oled_mode(oled_mode_t mode) {
     oled_mode = mode;
 }
 
-void set_layer_name(const char* name) {
-    layer_name = name;
-}
-
 void process_record_encoder_oled(uint16_t keycode) {
     oled_timer = timer_read32();
     switch (keycode) {
@@ -71,7 +67,6 @@ void render_wpm(void) {
     wpm_counter[2] = '0' + n % 10;
     wpm_counter[1] = '0' + (n /= 10) % 10;
     wpm_counter[0] = '0' + n / 10 ;
-    //oled_write_P(PSTR("                 "), false);
     oled_write(wpm_counter, false);
 }
 
@@ -80,21 +75,17 @@ void render_idle(void) {
     led_t led_state = host_keyboard_led_state();
 
     // Printing logo, state
-    //oled_write_P(oled_mode_icons[0][0], false);
-    oled_write_P(PSTR("Nibble"), false);
+    oled_write_P(oled_mode_icons[0][0], false);
     oled_write_P(PSTR("        "), false);
     oled_write_P(led_state.scroll_lock ? PSTR("S ") : PSTR("  "), false);
     oled_write_P(led_state.num_lock ? PSTR("N ") : PSTR("  "), false);
     oled_write_P(led_state.caps_lock ? PSTR("C ") : PSTR("  "), false);
     oled_write_P(PSTR("\n"), false);
-
-    oled_write_P(PSTR("  Layer: "), false);
-    oled_write_P(layer_name, false);
+    oled_write_P(oled_mode_icons[0][1], false);
+    oled_write_P(PSTR("  Nibble"), false);
     oled_write_P(PSTR("\n"), false);
-
-    //oled_write_P(oled_mode_icons[0][1], false);
-    //oled_write_P(oled_mode_icons[0][2], false);
-    //oled_write_P(PSTR("\n"), false);
+    oled_write_P(oled_mode_icons[0][2], false);
+    oled_write_P(PSTR("\n"), false);
 
     // Printing WPM
     oled_write_P(PSTR("    WPM: "), false);
