@@ -15,6 +15,10 @@
  */
 #include QMK_KEYBOARD_H
 
+#ifdef OLED_ENABLE
+#include "oled_display.h"
+#endif
+
 enum layer_names
 {
     _MAIN,
@@ -27,12 +31,13 @@ enum custom_keycodes
     KC_CUST = SAFE_RANGE,
 };
 
+// clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_MAIN] = LAYOUT_all(
                 KC_GESC,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,      KC_7,       KC_8,       KC_9,       KC_0,       KC_MINS, KC_EQL,    KC_BSPC,                KC_HOME,
     KC_MUTE,    KC_TAB,     KC_Q,    KC_W,    KC_F,    KC_P,    KC_G,    KC_J,      KC_L,       KC_U,       KC_Y,       KC_SCLN,    KC_LBRC, KC_RBRC,   KC_BSLS,                KC_END,
     KC_CALC,    MO(_NAV),   KC_A,    KC_R,    KC_S,    KC_T,    KC_D,    KC_H,      KC_N,       KC_E,       KC_I,       KC_O,       KC_QUOT,            KC_ENT,                 KC_PGUP,
-    KC_F15,     KC_LSFT,    KC_1,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,      KC_K,       KC_M,       KC_COMM,    KC_DOT,     KC_SLSH,            KC_RSFT,    KC_UP,      KC_PGDN,
+    KC_F14,     KC_LSFT,    KC_F13,  KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,      KC_K,       KC_M,       KC_COMM,    KC_DOT,     KC_SLSH,            KC_RSFT,    KC_UP,      KC_PGDN,
     MO(_MEDIA), KC_LCTL,    KC_LGUI, KC_LALT,                   KC_SPC,             MO(_NAV),               KC_RALT,                         KC_RCTL,   KC_LEFT,    KC_DOWN,    KC_RGHT
   ),
   [_NAV] = LAYOUT_ansi(
@@ -50,39 +55,76 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______,    _______,    _______, _______,                   _______,                        _______,    _______,    _______,    _______,             _______,       _______
   ),
 };
+// clang-format on
+
+static const char PROGMEM layer_names_str[3][10] = {
+    "MAIN",
+    "NAV",
+    "MEDIA",
+};
+
+
+#ifdef OLED_ENABLE
+oled_rotation_t oled_init_user(oled_rotation_t rotation)
+{
+    oled_timer = timer_read32();
+    set_oled_mode(OLED_MODE_IDLE);
+    return OLED_ROTATION_0;
+}
+
+bool oled_task_user(void)
+{
+    if (timer_elapsed(oled_timer) >= 3000)
+    {
+        set_oled_mode(OLED_MODE_IDLE);
+    }
+
+    if (layer_state_is(1))
+    {
+        set_layer_name(layer_names_str[1]);
+    }
+    else if (layer_state_is(2))
+    {
+        set_layer_name(layer_names_str[2]);
+    }
+    else
+    {
+        set_layer_name(layer_names_str[0]);
+    }
+
+    render_frame();
+    return false;
+}
+#endif
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record)
 {
     // Send keystrokes to host keyboard, if connected (see readme)
-    process_record_remote_kb(keycode, record);
+    // process_record_remote_kb(keycode, record);
+
+    bool ctrl = get_mods() & MOD_MASK_CTRL;
 
     switch (keycode)
     {
+    case RGB_TOG:
+        if (record->event.pressed)
+        {
+#ifdef OLED_ENABLE
+            process_record_keymap_oled(keycode);
+#endif
+        }
+        break;
+
+    case KC_GESC:
+        if (ctrl && record->event.pressed)
+        {
+            // TODO - unsigned conversion from 'int' to 'unint8_t' (aka 'unsigned char') .. ?
+            // tap_code(LCTL(KC_F4));
+            //return false;
+        }
+        break;
+
     case KC_CUST: //custom macro
-        if (record->event.pressed)
-        {
-        }
-        break;
-
-    case RM_1: //remote macro 1
-        if (record->event.pressed)
-        {
-        }
-        break;
-
-    case RM_2: //remote macro 2
-        if (record->event.pressed)
-        {
-        }
-        break;
-
-    case RM_3: //remote macro 3
-        if (record->event.pressed)
-        {
-        }
-        break;
-
-    case RM_4: //remote macro 4
         if (record->event.pressed)
         {
         }
@@ -148,10 +190,16 @@ bool encoder_update_user(uint8_t index, bool clockwise)
         if (clockwise)
         {
             tap_code(KC_VOLU);
+#ifdef OLED_ENABLE
+            process_record_encoder_oled(KC_VOLU);
+#endif
         }
         else
         {
             tap_code(KC_VOLD);
+#ifdef OLED_ENABLE
+            process_record_encoder_oled(KC_VOLD);
+#endif
         }
     }
 
