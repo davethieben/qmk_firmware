@@ -15,6 +15,8 @@
  */
 #include "bitc_led.h"
 
+#ifdef BITC_LED_ENABLE
+
 void set_bitc_LED(uint8_t mode) {
     switch(mode) {
         case LED_ON:
@@ -35,3 +37,13 @@ void set_bitc_LED(uint8_t mode) {
         break;
     }
 }
+
+#else
+
+void keyboard_post_init_kb(void)
+{
+    setPinOutput(PIN_LED);
+    writePin(PIN_LED, GPIO_STATE_LOW);
+}
+
+#endif

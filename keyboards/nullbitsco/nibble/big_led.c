@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifdef BIG_LED_ENABLE
+
 #include "big_led.h"
 
 void set_big_LED_rgb(uint8_t r_mode, uint8_t g_mode, uint8_t b_mode) {
@@ -71,3 +73,5 @@ void set_big_LED_b(uint8_t mode) {
         break;
     }
 }
+
+#endif

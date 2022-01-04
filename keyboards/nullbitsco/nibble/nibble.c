@@ -15,6 +15,8 @@
  */
 #include QMK_KEYBOARD_H
 
+#ifdef BITC_LED_ENABLE
+
 // Use Bit-C LED to show CAPS LOCK status
 bool led_update_kb(led_t led_state) {
     bool res = led_update_user(led_state);
@@ -23,3 +25,5 @@ bool led_update_kb(led_t led_state) {
     }
     return res;
 }
+
+#endif

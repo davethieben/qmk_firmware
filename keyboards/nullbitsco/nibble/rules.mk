@@ -20,6 +20,13 @@ ENCODER_ENABLE = yes        # Use rotary encoder
 LTO_ENABLE = yes            # Link-time optimization
 CUSTOM_MATRIX = lite        # Lite custom matrix
 
+# Nibble options
+ANSI_ENABLE = 		yes
+ISO_ENABLE = 		yes
+REMOTEKB_ENABLE = 	yes
+BITC_LED_ENABLE = 	yes
+BIG_LED_ENABLE = 	yes
+
 # Project specific files
 SRC += matrix.c \
        common/bitc_led.c \
