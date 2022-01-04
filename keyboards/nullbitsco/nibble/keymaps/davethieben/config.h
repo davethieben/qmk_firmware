@@ -29,3 +29,6 @@
 #define MOUSEKEY_WHEEL_INTERVAL         100         // Time between wheel movements
 #define MOUSEKEY_WHEEL_MAX_SPEED        16          // Maximum number of scroll steps per scroll action
 #define MOUSEKEY_WHEEL_TIME_TO_MAX      40          // Time until maximum scroll speed is reached
+
+#define OLED_ROTATION           OLED_ROTATION_0
+#define OLED_STATUS_TIMEOUT     3000

@@ -14,8 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include QMK_KEYBOARD_H
-#include "layers.h"
 #include "print.h"
+
+#include "layers.h"
+#include "layer_lights.c"
 #include "oled_display.h"
 
 // clang-format off
@@ -68,52 +70,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______,    _______,    _______,    _______,                   _______,            _______,                 _______,                         _______,    _______,    _______,    _______
   ),
 };
-
-// RGB Layer assignments:
-const rgblight_segment_t PROGMEM layer_lights_cyan[] = RGBLIGHT_LAYER_SEGMENTS(
-    // starting LED, num LEDs, color:
-    {0, RGBLED_NUM, HSV_CYAN}
-);
-
-const rgblight_segment_t PROGMEM layer_lights_purple[] = RGBLIGHT_LAYER_SEGMENTS(
-    {0, RGBLED_NUM, HSV_PURPLE}
-);
-
-const rgblight_segment_t PROGMEM layer_lights_green[] = RGBLIGHT_LAYER_SEGMENTS(
-    {0, RGBLED_NUM, HSV_GREEN}
-);
-
-// Now define the array of layers. Later layers take precedence
-const rgblight_segment_t* const PROGMEM layer_lights[] = RGBLIGHT_LAYERS_LIST(
-    layer_lights_cyan,
-    layer_lights_purple,
-    layer_lights_green
-);
-
 // clang-format on
-
-void keyboard_post_init_user(void)
-{
-    // Enable the LED layers
-    rgblight_layers = layer_lights;
-}
-
-oled_rotation_t oled_init_user(oled_rotation_t rotation)
-{
-    oled_timer = timer_read32();
-    set_oled_mode(OLED_MODE_IDLE);
-    return OLED_ROTATION_0;
-}
-
-bool oled_task_user(void)
-{
-    if (timer_elapsed(oled_timer) >= 3000)
-    {
-        set_oled_mode(OLED_MODE_IDLE);
-    }
-    render_frame();
-    return false;
-}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record)
 {
@@ -133,7 +90,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     case RGB_TOG:
         if (record->event.pressed)
         {
-            process_record_keymap_oled(keycode);
+            oled_process_record_keymap(keycode);
         }
         break;
 
@@ -162,14 +119,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         }
         break;
 
-    // case KC_ESCAPE:
-    //     if (record->event.pressed && (shift || gui))
-    //     {
-    //         tap_code(KC_GRAVE);
-    //         return false;
-    //     }
-    //     break;
-
     case KC_CUST: //custom macro
         if (record->event.pressed)
         {
@@ -180,123 +129,41 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     return true;
 }
 
-// RGB config, for changing RGB settings on non-VIA firmwares
-void change_RGB(bool clockwise)
-{
-    bool shift = get_mods() & MOD_MASK_SHIFT;
-    bool alt = get_mods() & MOD_MASK_ALT;
-    bool ctrl = get_mods() & MOD_MASK_CTRL;
-
-    if (clockwise)
-    {
-        if (alt)
-        {
-            rgblight_increase_hue();
-        }
-        else if (ctrl)
-        {
-            rgblight_increase_val();
-        }
-        else if (shift)
-        {
-            rgblight_increase_sat();
-        }
-        else
-        {
-            rgblight_step();
-        }
-    }
-    else
-    {
-        if (alt)
-        {
-            rgblight_decrease_hue();
-        }
-        else if (ctrl)
-        {
-            rgblight_decrease_val();
-        }
-        else if (shift)
-        {
-            rgblight_decrease_sat();
-        }
-        else
-        {
-            rgblight_step_reverse();
-        }
-    }
-}
-
-bool encoder_update_user(uint8_t index, bool clockwise)
-{
-    //if (get_highest_layer(layer_state|default_layer_state) > 0) { // not default layer
-
-    if (layer_state_is(_NAV))
-    {
-        if (clockwise)
-        {
-            tap_code(KC_VOLU);
-            process_record_encoder_oled(KC_VOLU);
-        }
-        else
-        {
-            tap_code(KC_VOLD);
-            process_record_encoder_oled(KC_VOLD);
-        }
-    }
-
-    else if (layer_state_is(_AUX))
-    {
-        change_RGB(clockwise);
-    }
-
-    else // Layer 0 - base layer
-    {
-        if (clockwise)
-        {
-            tap_code(KC_WH_U);
-        }
-        else
-        {
-            tap_code(KC_WH_D);
-        }
-    }
-
-    return false;
-}
-
 layer_state_t default_layer_state_set_user(layer_state_t state)
 {
-    //rgblight_set_layer_state(1, layer_state_cmp(state, _MAIN));
-    rgblight_set_layer_state(0, false); // turn off for base layer
+    activate_default_layer(state);
+
     return state;
 }
 
 layer_state_t layer_state_set_user(layer_state_t state)
 {
-    rgblight_set_layer_state(0, layer_state_cmp(state, _NAV));
-    rgblight_set_layer_state(1, layer_state_cmp(state, _AUX));
+    activate_layer(state);
+
     return state;
 }
 
-#ifdef REMOTEKB_ENABLE
 void matrix_init_user(void)
 {
+    // keyboard init:
+    layer_lights_init();
+
+#ifdef REMOTEKB_ENABLE
     // Initialize remote keyboard, if connected (see readme)
     matrix_init_remote_kb();
-}
 #endif
+}
 
 void matrix_scan_user(void)
 {
-    #ifdef REMOTEKB_ENABLE
-    // Scan and parse keystrokes from remote keyboard, if connected (see readme)
-    matrix_scan_remote_kb();
-    #endif
-
     if (is_alt_tab_active && timer_elapsed(alt_tab_timer) > 500)
     {
         unregister_code(KC_LALT);
         is_alt_tab_active = false;
     }
+
+#ifdef REMOTEKB_ENABLE
+    // Scan and parse keystrokes from remote keyboard, if connected (see readme)
+    matrix_scan_remote_kb();
+#endif
 }

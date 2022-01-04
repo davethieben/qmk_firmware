@@ -14,5 +14,5 @@ BITC_LED_ENABLE = 	no
 BIG_LED_ENABLE = 	no
 
 
-SRC += oled_display.c
-
+SRC += oled_display.c \
+	   encoder.c
