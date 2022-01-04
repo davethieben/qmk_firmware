@@ -1,4 +1,4 @@
-/* Copyright 2021 Jose Luis Adelantado Torres
+/* Copyright 2022 Dave Thieben (https://github.com/davethieben)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,16 @@
 #pragma once
 
 // Referenced custom font
-#ifdef OLED_ENABLE
-#    define OLED_FONT_H "keyboards/nullbitsco/nibble/keymaps/oled_status/glcdfont.c"
-#endif
+#define OLED_FONT_H "keyboards/nullbitsco/nibble/keymaps/oled_status/glcdfont.c"
+
+// enable setting underglow based on active layer
+#define RGBLIGHT_LAYERS
+
+// number of times you have to tap a layer key to toggle it when using TT()
+#define TAPPING_TOGGLE 2
+
+// Mousekeys: https://docs.qmk.fm/#/feature_mouse_keys
+#define MOUSEKEY_WHEEL_DELAY            300         // Delay between pressing a wheel key and wheel movement
+#define MOUSEKEY_WHEEL_INTERVAL         100         // Time between wheel movements
+#define MOUSEKEY_WHEEL_MAX_SPEED        16          // Maximum number of scroll steps per scroll action
+#define MOUSEKEY_WHEEL_TIME_TO_MAX      40          // Time until maximum scroll speed is reached

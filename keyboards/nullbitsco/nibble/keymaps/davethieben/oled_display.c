@@ -1,4 +1,4 @@
-/* Copyright 2021 Jose Luis Adelantado Torres
+/* Copyright 2022 Dave Thieben (https://github.com/davethieben)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,9 +76,6 @@ void render_layer(void)
     case _NAV:
         oled_write_P(PSTR("Nav  "), false);
         break;
-    case _MEDIA:
-        oled_write_P(PSTR("Media"), false);
-        break;
     case _AUX:
         oled_write_P(PSTR("Aux  "), false);
         break;
@@ -105,12 +102,13 @@ void render_idle(void)
     render_layer();
     oled_write_P(PSTR("  |\n"), false);
 
-    oled_write_P(PSTR("|    "), false);
-    oled_write_P(PSTR("      |"), false);
+    oled_write_P(PSTR("|                  |\n"), false);
 
     oled_write_P(PSTR("|    WPM: "), false);
     render_wpm();
-    oled_write_P(PSTR("      |"), false);
+    oled_write_P(PSTR("      |\n"), false);
+
+    oled_write_P(PSTR("|                  |\n"), false);
 
 }
 
