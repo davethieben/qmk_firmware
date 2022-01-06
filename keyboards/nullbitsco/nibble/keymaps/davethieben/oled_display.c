@@ -17,6 +17,20 @@
 #include "oled_display.h"
 #include "layers.h"
 
+static const char PROGMEM oled_mode_messages[5][15] = {
+    "",
+    "Volume Up",
+    "Volume Down",
+    "RGB ON",
+    "RGB OFF"};
+
+static const char PROGMEM oled_mode_icons[5][3][5] = {
+    {{128, 129, 130, 131, 0}, {160, 161, 162, 163, 0}, {192, 193, 194, 195, 0}},
+    {{132, 133, 134, 135, 0}, {164, 165, 166, 167, 0}, {196, 197, 198, 199, 0}},
+    {{136, 137, 138, 139, 0}, {168, 169, 170, 171, 0}, {200, 201, 202, 203, 0}},
+    {{140, 141, 142, 143, 0}, {172, 173, 174, 175, 0}, {204, 205, 206, 207, 0}},
+    {{144, 145, 146, 147, 0}, {176, 177, 178, 179, 0}, {208, 209, 210, 211, 0}}};
+
 /* Quantum OLED driver functions: */
 oled_rotation_t oled_init_user(oled_rotation_t rotation)
 {
