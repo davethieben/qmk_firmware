@@ -19,3 +19,8 @@
 #ifdef OLED_ENABLE
 #    define OLED_FONT_H "keyboards/nullbitsco/nibble/keymaps/oled_status/glcdfont.c"
 #endif
+
+#define ANSI_ENABLE
+#define ISO_ENABLE
+#define REMOTEKB_ENABLE
+

@@ -18,6 +18,9 @@
 #ifdef OLED_ENABLE
 #    include "oled_display.h"
 #endif
+#ifdef REMOTEKB_ENABLE
+#    include "common/remote_kb.h"
+#endif
 
 enum layer_names { _MA, _FN };
 
@@ -61,8 +64,10 @@ bool oled_task_user(void) {
 #endif
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+#ifdef REMOTEKB_ENABLE
     // Send keystrokes to host keyboard, if connected (see readme)
     process_record_remote_kb(keycode, record);
+#endif
 
     switch (keycode) {
         case RGB_TOG:
@@ -96,11 +101,15 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 }
 
 void matrix_init_user(void) {
+#ifdef REMOTEKB_ENABLE
     // Initialize remote keyboard, if connected (see readme)
     matrix_init_remote_kb();
+#endif
 }
 
 void matrix_scan_user(void) {
+#ifdef REMOTEKB_ENABLE
     // Scan and parse keystrokes from remote keyboard, if connected (see readme)
     matrix_scan_remote_kb();
+#endif
 }
