@@ -15,4 +15,5 @@ BIG_LED_ENABLE = 	no
 
 
 SRC += oled_display.c \
+	   layer_lights.c \
 	   encoder.c

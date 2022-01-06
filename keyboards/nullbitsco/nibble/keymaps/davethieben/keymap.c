@@ -17,7 +17,7 @@
 #include "print.h"
 
 #include "layers.h"
-#include "layer_lights.c"
+#include "layer_lights.h"
 #include "oled_display.h"
 
 // clang-format off

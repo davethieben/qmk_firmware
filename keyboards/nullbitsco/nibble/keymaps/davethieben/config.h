@@ -20,6 +20,9 @@
 
 // enable setting underglow based on active layer
 #define RGBLIGHT_LAYERS
+// remove animations we don't use to save space
+#undef RGBLIGHT_ANIMATIONS
+#define RGBLIGHT_EFFECT_RAINBOW_SWIRL
 
 // number of times you have to tap a layer key to toggle it when using TT()
 #define TAPPING_TOGGLE 2

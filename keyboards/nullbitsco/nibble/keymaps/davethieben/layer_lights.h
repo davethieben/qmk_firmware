@@ -17,27 +17,6 @@
 
 #include QMK_KEYBOARD_H
 
-// RGB Layer assignments:
-const rgblight_segment_t PROGMEM layer_lights_cyan[] = RGBLIGHT_LAYER_SEGMENTS(
-    // starting LED, num LEDs, color:
-    {0, RGBLED_NUM, HSV_CYAN}
-);
-
-const rgblight_segment_t PROGMEM layer_lights_purple[] = RGBLIGHT_LAYER_SEGMENTS(
-    {0, RGBLED_NUM, HSV_PURPLE}
-);
-
-const rgblight_segment_t PROGMEM layer_lights_green[] = RGBLIGHT_LAYER_SEGMENTS(
-    {0, RGBLED_NUM, HSV_GREEN}
-);
-
-// later layers take precedence
-const rgblight_segment_t* const PROGMEM layer_lights[] = RGBLIGHT_LAYERS_LIST(
-    layer_lights_cyan,
-    layer_lights_purple,
-    layer_lights_green
-);
-
 void layer_lights_init(void);
 
 void activate_default_layer(layer_state_t state);
