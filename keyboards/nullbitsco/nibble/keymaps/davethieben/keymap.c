@@ -33,9 +33,11 @@ enum custom_keycodes
     KC_CUST     = SAFE_RANGE,
     // custom codes with handlers in process_record_user:
     SUPER_ALT_TAB,
+    DEBUG_INFO,
+    OLED_TOG,
     // alias codes:
     ROTARY      = KC_MUTE,
-    ACTION_1    = KC_CALC,
+    ACTION_1    = TT(_NUM),
     ACTION_2    = MO(_AUX),
     ACTION_3    = SUPER_ALT_TAB,
     CAPS_LOCK   = MO(_NAV),
@@ -58,14 +60,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_NAV] = LAYOUT_all(
                 _______,    KC_F1,      KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,     KC_F7,      KC_F8,       KC_F9,      KC_F10,     KC_F11,  KC_F12,     _______,                _______,
     _______,    _______,    C(KC_Q),    _______, _______, _______, _______, _______,   KC_PGUP,    KC_UP,       KC_PGDN,    C(KC_DEL),  KC_DEL,  KC_BSPC,    C(KC_BSPC),             _______,
-    _______,    _______,    _______,    _______, _______, _______, _______, KC_HOME,   C(KC_LEFT), KC_DOWN,     C(KC_RGHT), KC_END,     _______,             _______,                _______,
-    _______,    _______,    _______,    C(KC_Z), C(KC_X), C(KC_C), C(KC_V), _______,   KC_LEFT,    SUPER_ALT_TAB, _______,  KC_RGHT,    _______,             _______,    _______,    _______,
+    _______,    _______,    KC_LSFT,    _______, _______, _______, _______, KC_HOME,   C(KC_LEFT), KC_DOWN,     C(KC_RGHT), KC_END,     KC_END,              _______,                _______,
+    _______,    _______,    _______,    C(KC_Z), C(KC_X), C(KC_C), C(KC_V), _______,   KC_LEFT,    KC_DOWN,     KC_DOWN,    KC_RGHT,    _______,             _______,    _______,    _______,
     _______,    _______,    _______,    _______,                   _______,            _______,                 KC_APP,                          _______,    A(KC_LEFT), _______,    A(KC_RGHT)
   ),
+  [_NUM] = LAYOUT_all(
+                _______,    KC_CALC,    _______, _______, _______, _______, _______,   _______,     KC_PSLS,    KC_PAST,    KC_PMNS,    _______, _______,    _______,                _______,
+    _______,    _______,    _______,    _______, _______, _______, _______, _______,   KC_KP_7,     KC_KP_8,    KC_KP_9,    KC_PPLS,    _______, _______,    _______,                _______,
+    _______,    _______,    _______,    _______, _______, _______, _______, _______,   KC_KP_4,     KC_KP_5,    KC_KP_6,    _______,    _______,             _______,                _______,
+    _______,    _______,    _______,    _______, _______, _______, _______, _______,   KC_KP_1,     KC_KP_2,    KC_KP_3,    _______,    _______,             _______,    _______,    _______,
+    _______,    _______,    _______,    _______,                   KC_KP_0,            _______,                 _______,                         _______,    _______,    _______,    _______
+  ),
   [_AUX] = LAYOUT_all(
-                RESET,      _______,    _______, _______, _______, _______, _______,   _______,    _______,     _______,    _______,    _______, _______,    _______,                _______,
-    RGB_TOG,    DEBUG,      _______,    _______, _______, _______, _______, _______,   _______,    _______,     _______,    _______,    _______, _______,    _______,                _______,
-    _______,    _______,    _______,    _______, _______, _______, _______, _______,   _______,    _______,     _______,    _______,    _______,             _______,                _______,
+                RESET,      DEBUG,   DEBUG_INFO, _______, _______, _______, _______,   _______,    _______,     _______,    _______,    _______, _______,    _______,                _______,
+    RGB_TOG,    _______,    _______,    _______, _______, _______, _______, _______,   _______,    _______,     _______,    _______,    _______, _______,    _______,                _______,
+    OLED_TOG,   _______,    _______,    _______, _______, _______, _______, _______,   _______,    _______,     _______,    _______,    _______,             _______,                _______,
     _______,    _______,    _______,    _______, _______, _______, _______, _______,   _______,    _______,     _______,    _______,    _______,             _______,    _______,    _______,
     _______,    _______,    _______,    _______,                   _______,            _______,                 _______,                         _______,    _______,    _______,    _______
   ),
@@ -84,18 +93,20 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     //bool shift = mods & MOD_MASK_SHIFT;
     //bool gui = mods & MOD_MASK_GUI;
     bool ctrl = mods & MOD_MASK_CTRL;
+    bool keydown = record->event.pressed;
 
     switch (keycode)
     {
     case RGB_TOG:
-        if (record->event.pressed)
+    //case OLED_TOG:
+        if (keydown)
         {
             oled_process_record_keymap(keycode);
         }
         break;
 
     case SUPER_ALT_TAB:
-        if (record->event.pressed)
+        if (keydown)
         {
             if (!is_alt_tab_active)
             {
@@ -112,18 +123,25 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         break;
 
     case KC_BSLS:
-        if (record->event.pressed && ctrl)
+        if (keydown && ctrl)
         {
             tap_code(KC_TAB);
             return false;
         }
         break;
 
-    case KC_CUST: //custom macro
-        if (record->event.pressed)
+    case DEBUG_INFO:
+        if (keydown)
         {
+            dprintf("OLED On: %s \n", (is_oled_on() ? "true" : "false"));
+            dprintf("OLED Brightness: %d \n", oled_get_brightness());
+            dprintf("OLED Scrolling: %s \n", (is_oled_scrolling() ? "true" : "false"));
+            dprintf("OLED Max Chars: %d \n", oled_max_chars());
+            dprintf("OLED Max Lines: %d \n", oled_max_lines());
         }
         break;
+
+
     }
 
     return true;
@@ -139,6 +157,22 @@ layer_state_t default_layer_state_set_user(layer_state_t state)
 layer_state_t layer_state_set_user(layer_state_t state)
 {
     activate_layer(state);
+
+    enum layer_names layer = get_highest_layer(state);
+    switch (layer)
+    {
+    case _NAV:
+        set_oled_status("Set Layer: NAV");
+        break;
+    case _NUM:
+        set_oled_status("Set Layer: NUM");
+        break;
+    case _AUX:
+        set_oled_status("Set Layer: AUX");
+        break;
+    default:
+        break;
+    }
 
     return state;
 }

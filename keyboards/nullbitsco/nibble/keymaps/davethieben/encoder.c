@@ -51,6 +51,7 @@ bool encoder_update_user(uint8_t index, bool clockwise)
         {
             tap_code(KC_MS_WH_DOWN);
         }
+        set_oled_status("Scrolling...");
     }
 
     return false;
@@ -101,4 +102,12 @@ void change_RGB(bool clockwise)
             rgblight_step_reverse();
         }
     }
+
+    static char rgbStatusLine1[26] = {0};
+    snprintf(rgbStatusLine1, sizeof(rgbStatusLine1), "RGB Mode: %d", rgblight_get_mode());
+    set_oled_status(rgbStatusLine1);
+
+    // static char rgbStatusLine2[26] = {0};
+    // snprintf(rgbStatusLine2, sizeof(rgbStatusLine2), "h:%d s:%d v:%d", rgblight_get_hue(), rgblight_get_sat(), rgblight_get_val());
+    // set_oled_status(rgbStatusLine2);
 }

@@ -31,6 +31,8 @@ static const char PROGMEM oled_mode_icons[5][3][5] = {
     {{140, 141, 142, 143, 0}, {172, 173, 174, 175, 0}, {204, 205, 206, 207, 0}},
     {{144, 145, 146, 147, 0}, {176, 177, 178, 179, 0}, {208, 209, 210, 211, 0}}};
 
+static const char EMPTY_STATUS[] = "                    ";
+
 /* Quantum OLED driver functions: */
 oled_rotation_t oled_init_user(oled_rotation_t rotation)
 {
@@ -45,6 +47,12 @@ bool oled_task_user(void)
     {
         set_oled_mode(OLED_MODE_IDLE);
     }
+
+    if (timer_elapsed(oled_status_timer) >= OLED_STATUS_TIMEOUT)
+    {
+        reset_oled_status();
+    }
+
     render_frame();
     return false;
 }
@@ -54,6 +62,21 @@ bool oled_task_user(void)
 void set_oled_mode(oled_mode_t mode)
 {
     oled_mode = mode;
+    dprintf("OLED Mode: %04X", mode);
+}
+
+void set_oled_status(char status[])
+{
+    oled_status_timer = timer_read32();
+    strcpy(oled_status, status);
+
+    dprintf("OLED Status: %s", oled_status);
+}
+
+void reset_oled_status(void)
+{
+    strcpy(oled_status, EMPTY_STATUS);
+    dprintf("OLED Status Reset");
 }
 
 void oled_process_record_encoder(uint16_t keycode)
@@ -75,14 +98,26 @@ void oled_process_record_encoder(uint16_t keycode)
 
 void oled_process_record_keymap(uint16_t keycode)
 {
-    oled_timer = timer_read32();
-    if (rgblight_is_enabled())
+    switch (keycode)
     {
-        set_oled_mode(OLED_MODE_RGB_OFF);
-    }
-    else
-    {
-        set_oled_mode(OLED_MODE_RGB_ON);
+    case RGB_TOG:
+        oled_timer = timer_read32();
+        if (rgblight_is_enabled())
+        {
+            set_oled_mode(OLED_MODE_RGB_OFF);
+        }
+        else
+        {
+            set_oled_mode(OLED_MODE_RGB_ON);
+        }
+        break;
+
+    // case OLED_TOG:
+    //     if (is_oled_on())
+    //         oled_off();
+    //     else
+    //         oled_on();
+    //     break;
     }
 }
 
@@ -91,16 +126,19 @@ void render_layer(void)
     switch (get_highest_layer(layer_state))
     {
     case _MAIN:
-        oled_write_P(PSTR("Base "), false);
+        oled_write_P(PSTR("Base"), false);
         break;
     case _NAV:
-        oled_write_P(PSTR("Nav  "), false);
+        oled_write_P(PSTR("NAV "), false);
+        break;
+    case _NUM:
+        oled_write_P(PSTR("NUM "), false);
         break;
     case _AUX:
-        oled_write_P(PSTR("Aux  "), false);
+        oled_write_P(PSTR("AUX "), false);
         break;
     default:
-        oled_write_P(PSTR("Unkn "), false);
+        oled_write_P(PSTR("????"), false);
         break;
     }
 }
@@ -118,18 +156,38 @@ void render_wpm(void)
 
 void render_idle(void)
 {
-    oled_write_P(PSTR("| Nibble    "), false);
-    render_layer();
-    oled_write_P(PSTR("  |\n"), false);
+    // OLED can contain 4 rows of 20 chars max
 
-    oled_write_P(PSTR("|                  |\n"), false);
+    // line 1:
+    oled_write_P(PSTR("Nibble    "), false); // 10 chars
+    render_layer(); // 4 chars
+    //oled_write_P(PSTR("      \n"), false);
+    oled_write_line("");
 
-    oled_write_P(PSTR("|    WPM: "), false);
-    render_wpm();
-    oled_write_P(PSTR("      |\n"), false);
+    // line 2:
+    oled_write_line(oled_status);
 
-    oled_write_P(PSTR("|                  |\n"), false);
+    // line 3:
+    //oled_write_line("");
 
+    // line 4:
+    //oled_write_P(PSTR("    WPM: "), false);
+    //render_wpm();
+    //oled_write_line("");
+
+}
+
+void oled_write_line(char line[])
+{
+    oled_write(line, false);
+
+    int remaining = 19 - strlen(line);
+    while (remaining > 0)
+    {
+        oled_write_char(' ', false);
+        remaining--;
+    }
+    oled_write_P(PSTR("\n"), false);
 }
 
 void render_status_mode_message(void)

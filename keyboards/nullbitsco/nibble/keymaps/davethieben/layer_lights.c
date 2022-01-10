@@ -52,5 +52,6 @@ void activate_default_layer(layer_state_t state)
 void activate_layer(layer_state_t state)
 {
     rgblight_set_layer_state(0, layer_state_cmp(state, _NAV));
-    rgblight_set_layer_state(1, layer_state_cmp(state, _AUX));
+    rgblight_set_layer_state(1, layer_state_cmp(state, _NUM));
+    rgblight_set_layer_state(2, layer_state_cmp(state, _AUX));
 }

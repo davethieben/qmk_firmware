@@ -25,8 +25,16 @@ typedef enum {
 
 uint16_t oled_timer;
 oled_mode_t oled_mode;
+char oled_status[21]; // 20 chars + 1 terminator char
+uint16_t oled_status_timer;
 
 void set_oled_mode(oled_mode_t mode);
+
+void set_oled_status(char status[]);
+
+void reset_oled_status(void);
+
+void oled_write_line(char line[]);
 
 void oled_process_record_encoder(uint16_t keycode);
 
