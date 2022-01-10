@@ -143,6 +143,7 @@ void render_layer(void)
     }
 }
 
+#ifdef WPM_ENABLE
 void render_wpm(void)
 {
     uint8_t n = get_current_wpm();
@@ -153,15 +154,15 @@ void render_wpm(void)
     wpm_counter[0] = '0' + n / 10;
     oled_write(wpm_counter, false);
 }
+#endif
 
 void render_idle(void)
 {
     // OLED can contain 4 rows of 20 chars max
 
     // line 1:
-    oled_write_P(PSTR("Nibble    "), false); // 10 chars
+    oled_write_P(PSTR("Nibble        "), false); // 14 chars
     render_layer(); // 4 chars
-    //oled_write_P(PSTR("      \n"), false);
     oled_write_line("");
 
     // line 2:
@@ -171,11 +172,28 @@ void render_idle(void)
     //oled_write_line("");
 
     // line 4:
+    //char *current_time = get_time();
+    //oled_write_line(current_time);
+
     //oled_write_P(PSTR("    WPM: "), false);
     //render_wpm();
     //oled_write_line("");
 
 }
+
+/** needs fixed - where to get current date/time?
+char* get_time()
+{
+    time_t rawtime;
+    time (&rawtime);
+
+    struct tm * timeinfo;
+    timeinfo = localtime(&rawtime);
+
+    char buffer[20];
+    strftime(buffer, 20,"%a %h %d %I:%M %p",timeinfo);
+    return buffer;
+}*/
 
 void oled_write_line(char line[])
 {

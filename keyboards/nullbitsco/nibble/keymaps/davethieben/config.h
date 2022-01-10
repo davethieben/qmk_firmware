@@ -35,3 +35,12 @@
 
 #define OLED_ROTATION           OLED_ROTATION_0
 #define OLED_STATUS_TIMEOUT     3000
+
+// Disabling unused functions to save space
+#undef LOCKING_SUPPORT_ENABLE
+#undef LOCKING_RESYNC_ENABLE
+#define NO_ACTION_ONESHOT
+#define NO_MUSIC_MODE
+
+#define LAYER_STATE_8BIT  // limit max number of layers to 8
+// or: #define LAYER_STATE_16BIT // limit to 16

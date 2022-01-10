@@ -1,10 +1,18 @@
 
-OLED_ENABLE = yes
+OLED_ENABLE 				= yes
 OLED_DRIVER = SSD1306
-WPM_ENABLE = yes
-# VIA_ENABLE = yes
-CONSOLE_ENABLE = yes
-MOUSEKEY_ENABLE = yes
+
+AUTO_SHIFT_ENABLE 			= no
+CONSOLE_ENABLE 				= yes
+COMMAND_ENABLE 				= no
+KEY_OVERRIDE_ENABLE 		= no
+MAGIC_ENABLE 				= no
+MOUSEKEY_ENABLE 			= yes
+SPACE_CADET_ENABLE 			= no
+TAP_DANCE_ENABLE 			= no
+VELOCIKEY_ENABLE 			= no
+# VIA_ENABLE 				= yes
+WPM_ENABLE 					= no
 
 # Nibble options
 ANSI_ENABLE = 		yes
