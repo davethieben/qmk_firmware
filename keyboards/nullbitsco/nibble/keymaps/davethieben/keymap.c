@@ -15,6 +15,7 @@
  */
 #include QMK_KEYBOARD_H
 #include "print.h"
+#include "raw_hid.h"
 
 #include "layers.h"
 #include "layer_lights.h"
@@ -35,6 +36,7 @@ enum custom_keycodes
     SUPER_ALT_TAB,
     DEBUG_INFO,
     OLED_TOG,
+    RGB_CUST_1,
     // alias codes:
     ROTARY      = KC_MUTE,
     ACTION_1    = TT(_NUM),
@@ -53,6 +55,9 @@ enum custom_keycodes
 
 bool is_alt_tab_active = false;
 uint16_t alt_tab_timer = 0;
+uint16_t rgb_timer = 0;
+uint16_t rgb_timer_last = 0;
+uint8_t _rgb_dir = 0;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_MAIN] = LAYOUT_all(
@@ -77,7 +82,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______,    _______,    _______,    _______,                   KC_KP_0,            _______,                 _______,                         _______,    _______,    _______,    _______
   ),
   [_AUX] = LAYOUT_all(
-                RESET,      _______,    _______, _______, _______, _______, _______,   _______,    _______,     _______,    _______,    _______, _______,    _______,                _______,
+                RESET,    RGB_CUST_1,   _______, _______, _______, _______, _______,   _______,    _______,     _______,    _______,    _______, _______,    _______,                _______,
     RGB_TOG,    _______,    _______,    _______, _______, _______, _______, _______,   _______,    _______,     _______,    _______,    _______, _______,    _______,                _______,
     OLED_TOG,   _______,    _______,    _______, _______, _______, DEBUG,   _______,   _______,    _______,     _______,    _______,    _______,             _______,                _______,
     _______,    _______,    _______,    _______, _______, _______, _______, _______,   _______,    _______,     _______,    _______,    _______,             _______,    _______,    _______,
@@ -145,7 +150,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         }
         break;
 
+    case RGB_CUST_1:
+        if (keydown)
+        {
+            set_oled_status("RGB_CUST_1!");
 
+            rgb_timer_last = rgb_timer;
+            rgb_timer = timer_read32();
+            rgblight_show_solid_color(0x00, 0x44, 0xFF);
+        }
+        break;
     }
 
     return true;
@@ -204,4 +218,63 @@ void matrix_scan_user(void)
     // Scan and parse keystrokes from remote keyboard, if connected (see readme)
     matrix_scan_remote_kb();
 #endif
+
+    if (rgb_timer != 0)
+    {
+        if (timer_elapsed(rgb_timer) < 5000)
+        {
+            if (_rgb_dir == 0)
+                rgblight_decrease_val();
+            else
+                rgblight_increase_val();
+
+            if (rgblight_get_val() <= 30)
+                _rgb_dir = 1;
+            else if (rgblight_get_val() >= 225)
+                _rgb_dir = 0;
+        }
+        else
+        {
+            rgb_timer = 0;
+        }
+    }
+}
+
+enum hid_command_ids
+{
+    command_oled_enable = 0x80,
+    command_oled_set_message,
+    command_rgb_enable,
+    command_rgb_set_mode
+};
+
+void raw_hid_receive(uint8_t *data, uint8_t length)
+{
+    // Your code goes here. data is the packet received from host.
+    dprintf("raw_hid_receive: %s", data);
+
+    uint8_t *command_id = &(data[0]);
+    uint8_t *command_data = &(data[1]);
+    switch (*command_id)
+    {
+        case command_oled_enable:
+        {
+            if (command_data[0])
+                oled_off();
+            else
+                oled_on();
+            break;
+        }
+        case command_oled_set_message:
+        {
+            // int msglen = strlen(command_data);
+            set_oled_status((char *)command_data);
+            break;
+        }
+        default:
+        {
+            // used for debugging when building your host application by returning all data back to the host.
+            raw_hid_send(data, length);
+        }
+    }
 }
