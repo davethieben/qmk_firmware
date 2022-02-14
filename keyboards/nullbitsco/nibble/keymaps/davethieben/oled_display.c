@@ -62,7 +62,7 @@ bool oled_task_user(void)
 void set_oled_mode(oled_mode_t mode)
 {
     oled_mode = mode;
-    dprintf("OLED Mode: %04X", mode);
+    //dprintf("OLED Mode: %04X", mode);
 }
 
 void set_oled_status(char status[])
@@ -70,13 +70,13 @@ void set_oled_status(char status[])
     oled_status_timer = timer_read32();
     strcpy(oled_status, status);
 
-    dprintf("OLED Status: %s", oled_status);
+    //dprintf("OLED Status: %s", oled_status);
 }
 
 void reset_oled_status(void)
 {
     strcpy(oled_status, EMPTY_STATUS);
-    dprintf("OLED Status Reset");
+    //dprintf("OLED Status Reset");
 }
 
 void oled_process_record_encoder(uint16_t keycode)

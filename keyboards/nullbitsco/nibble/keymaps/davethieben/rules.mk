@@ -14,6 +14,8 @@ VELOCIKEY_ENABLE 			= no
 # VIA_ENABLE 				= yes
 WPM_ENABLE 					= no
 
+#RAW_ENABLE = yes
+
 # Nibble options
 ANSI_ENABLE = 		yes
 ISO_ENABLE = 		no

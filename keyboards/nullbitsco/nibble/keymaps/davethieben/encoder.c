@@ -63,24 +63,29 @@ void change_RGB(bool clockwise)
     bool shift = get_mods() & MOD_MASK_SHIFT;
     bool alt = get_mods() & MOD_MASK_ALT;
     bool ctrl = get_mods() & MOD_MASK_CTRL;
+    char rgbStatusLine1[26] = {0};
 
     if (clockwise)
     {
         if (alt)
         {
             rgblight_increase_hue();
+            snprintf(rgbStatusLine1, sizeof(rgbStatusLine1), "RGB Hue: %d", rgblight_get_hue());
         }
         else if (ctrl)
         {
             rgblight_increase_val();
+            snprintf(rgbStatusLine1, sizeof(rgbStatusLine1), "RGB Val: %d", rgblight_get_val());
         }
         else if (shift)
         {
             rgblight_increase_sat();
+            snprintf(rgbStatusLine1, sizeof(rgbStatusLine1), "RGB Sat: %d", rgblight_get_sat());
         }
         else
         {
             rgblight_step();
+            snprintf(rgbStatusLine1, sizeof(rgbStatusLine1), "RGB Mode: %d", rgblight_get_mode());
         }
     }
     else
@@ -88,23 +93,25 @@ void change_RGB(bool clockwise)
         if (alt)
         {
             rgblight_decrease_hue();
+            snprintf(rgbStatusLine1, sizeof(rgbStatusLine1), "RGB Hue: %d", rgblight_get_hue());
         }
         else if (ctrl)
         {
             rgblight_decrease_val();
+            snprintf(rgbStatusLine1, sizeof(rgbStatusLine1), "RGB Val: %d", rgblight_get_val());
         }
         else if (shift)
         {
             rgblight_decrease_sat();
+            snprintf(rgbStatusLine1, sizeof(rgbStatusLine1), "RGB Sat: %d", rgblight_get_sat());
         }
         else
         {
             rgblight_step_reverse();
+            snprintf(rgbStatusLine1, sizeof(rgbStatusLine1), "RGB Mode: %d", rgblight_get_mode());
         }
     }
 
-    static char rgbStatusLine1[26] = {0};
-    snprintf(rgbStatusLine1, sizeof(rgbStatusLine1), "RGB Mode: %d", rgblight_get_mode());
     set_oled_status(rgbStatusLine1);
 
     // static char rgbStatusLine2[26] = {0};
