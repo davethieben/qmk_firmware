@@ -46,6 +46,11 @@ enum custom_keycodes
     FUNC_SPACE  = TT(_NAV),
 };
 
+// TODO add home row mod-tap for GUI & Alt
+// TODO add foot switch for layers?
+// TODO change/add space & enter keys to use held
+// TODO setup macros for keys on NAV + (W, F, P, G, J)
+
 bool is_alt_tab_active = false;
 uint16_t alt_tab_timer = 0;
 
@@ -58,11 +63,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ACTION_3,   KC_LCTL,    KC_LGUI,    KC_LALT,                   RGHT_SPACE,         FUNC_SPACE,              KC_RALT,                         KC_RCTL,   KC_LEFT,    KC_DOWN,    KC_RGHT
   ),
   [_NAV] = LAYOUT_all(
-                _______,    KC_F1,      KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,     KC_F7,      KC_F8,       KC_F9,      KC_F10,     KC_F11,  KC_F12,     _______,                _______,
-    _______,    _______,    C(KC_Q),    _______, _______, _______, _______, _______,   KC_PGUP,    KC_UP,       KC_PGDN,    C(KC_DEL),  KC_DEL,  KC_BSPC,    C(KC_BSPC),             _______,
-    _______,    _______,    KC_LSFT,    _______, _______, _______, _______, KC_HOME,   C(KC_LEFT), KC_DOWN,     C(KC_RGHT), KC_END,     KC_END,              _______,                _______,
-    _______,    _______,    _______,    C(KC_Z), C(KC_X), C(KC_C), C(KC_V), _______,   KC_LEFT,    KC_DOWN,     KC_DOWN,    KC_RGHT,    _______,             _______,    _______,    _______,
-    _______,    _______,    _______,    _______,                   _______,            _______,                 KC_APP,                          _______,    A(KC_LEFT), _______,    A(KC_RGHT)
+                KC_GRAVE,   KC_F1,      KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,     KC_F7,      KC_F8,       KC_F9,      KC_F10,     KC_F11,  KC_F12,     _______,               KC_DEL,
+    _______,    SUPER_ALT_TAB, C(KC_Q), _______, _______, _______, _______, _______,   KC_PGUP,    KC_UP,       KC_PGDN,    C(KC_DEL),  KC_DEL,  KC_BSPC,    C(KC_BSPC),            _______,
+    _______,    _______,    KC_LSFT,    C(KC_S), _______, _______, _______, KC_HOME,   C(KC_LEFT), KC_DOWN,     C(KC_RGHT), KC_END,     KC_END,              _______,               _______,
+    _______,    _______,    _______,    C(KC_Z), C(KC_X), C(KC_C), C(KC_V), C(KC_B),   KC_LEFT,    KC_DOWN,     KC_DOWN,    KC_RGHT,    _______,             _______,   _______,    _______,
+    _______,    _______,    _______,    _______,                   _______,            _______,                 KC_APP,                          _______,    _______,   _______,    _______
   ),
   [_NUM] = LAYOUT_all(
                 _______,    KC_CALC,    _______, _______, _______, _______, _______,   _______,     KC_PSLS,    KC_PAST,    KC_PMNS,    _______, _______,    _______,                _______,
@@ -72,9 +77,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______,    _______,    _______,    _______,                   KC_KP_0,            _______,                 _______,                         _______,    _______,    _______,    _______
   ),
   [_AUX] = LAYOUT_all(
-                RESET,      DEBUG,   DEBUG_INFO, _______, _______, _______, _______,   _______,    _______,     _______,    _______,    _______, _______,    _______,                _______,
+                RESET,      _______,    _______, _______, _______, _______, _______,   _______,    _______,     _______,    _______,    _______, _______,    _______,                _______,
     RGB_TOG,    _______,    _______,    _______, _______, _______, _______, _______,   _______,    _______,     _______,    _______,    _______, _______,    _______,                _______,
-    OLED_TOG,   _______,    _______,    _______, _______, _______, _______, _______,   _______,    _______,     _______,    _______,    _______,             _______,                _______,
+    OLED_TOG,   _______,    _______,    _______, _______, _______, DEBUG,   _______,   _______,    _______,     _______,    _______,    _______,             _______,                _______,
     _______,    _______,    _______,    _______, _______, _______, _______, _______,   _______,    _______,     _______,    _______,    _______,             _______,    _______,    _______,
     _______,    _______,    _______,    _______,                   _______,            _______,                 _______,                         _______,    _______,    _______,    _______
   ),
@@ -83,11 +88,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record)
 {
-    // If console is enabled, it will print the matrix position and status of each key pressed
-#ifdef CONSOLE_ENABLE
     dprintf("KL: kc: 0x%04X, col: %u, row: %u, pressed: %b, time: %u, interrupt: %b, count: %u\n",
             keycode, record->event.key.col, record->event.key.row, record->event.pressed, record->event.time, record->tap.interrupted, record->tap.count);
-#endif
 
     const uint8_t mods = get_mods();
     //bool shift = mods & MOD_MASK_SHIFT;
@@ -98,7 +100,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     switch (keycode)
     {
     case RGB_TOG:
-    //case OLED_TOG:
+        //case OLED_TOG:
         if (keydown)
         {
             oled_process_record_keymap(keycode);
@@ -108,6 +110,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     case SUPER_ALT_TAB:
         if (keydown)
         {
+            set_oled_status("Knock, knock, Neo");
+
             if (!is_alt_tab_active)
             {
                 is_alt_tab_active = true;
