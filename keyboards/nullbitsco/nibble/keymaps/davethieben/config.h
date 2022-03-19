@@ -25,7 +25,7 @@
 #define RGBLIGHT_EFFECT_RAINBOW_SWIRL
 
 // number of times you have to tap a layer key to toggle it when using TT()
-#define TAPPING_TOGGLE 2
+#define TAPPING_TOGGLE 3
 
 // Mousekeys: https://docs.qmk.fm/#/feature_mouse_keys
 #define MOUSEKEY_WHEEL_DELAY            300         // Delay between pressing a wheel key and wheel movement

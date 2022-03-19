@@ -52,6 +52,7 @@ enum custom_keycodes
 // TODO add foot switch for layers?
 // TODO change/add space & enter keys to use held
 // TODO setup macros for keys on NAV + (W, F, P, G, J)
+// TODO show MODs on OLED instead of Caps Lock, etc.
 
 bool is_alt_tab_active = false;
 uint16_t alt_tab_timer = 0;
@@ -63,16 +64,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_MAIN] = LAYOUT_all(
                 KC_GESC,    KC_1,       KC_2,    KC_3,    KC_4,    KC_5,    KC_6,      KC_7,       KC_8,        KC_9,       KC_0,       KC_MINS, KC_EQL,    KC_BSPC,                KC_HOME,
     ROTARY,     KC_TAB,     KC_Q,       KC_W,    KC_F,    KC_P,    KC_G,    KC_J,      KC_L,       KC_U,        KC_Y,       KC_SCLN,    KC_LBRC, KC_RBRC,   KC_BSLS,                KC_END,
-    ACTION_1,   CAPS_LOCK,  KC_A,       KC_R,    KC_S,    KC_T,    KC_D,    KC_H,      KC_N,       KC_E,        KC_I,       KC_O,       KC_QUOT,            KC_ENT,                 KC_PGUP,
-    ACTION_2,   KC_LSFT,    LEFT_SPACE, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,      KC_K,       KC_M,        KC_COMM,    KC_DOT,     KC_SLSH,            KC_RSFT,    KC_UP,      KC_PGDN,
+    ACTION_1,   CAPS_LOCK,  KC_A,       KC_R,    KC_S,    KC_T,    KC_D,    KC_H,      KC_N,       KC_E,        KC_I,       KC_O,       KC_QUOT,            KC_ENT,                 KC_DEL,
+    ACTION_2,   KC_LSFT,    LEFT_SPACE, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,      KC_K,       KC_M,        KC_COMM,    KC_DOT,     KC_SLSH,            KC_RSFT,    KC_UP,      KC_RGUI,
     ACTION_3,   KC_LCTL,    KC_LGUI,    KC_LALT,                   RGHT_SPACE,         FUNC_SPACE,              KC_RALT,                         KC_RCTL,   KC_LEFT,    KC_DOWN,    KC_RGHT
   ),
   [_NAV] = LAYOUT_all(
                 KC_GRAVE,   KC_F1,      KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,     KC_F7,      KC_F8,       KC_F9,      KC_F10,     KC_F11,  KC_F12,     _______,               KC_DEL,
-    _______,    SUPER_ALT_TAB, C(KC_Q), _______, _______, _______, _______, _______,   KC_PGUP,    KC_UP,       KC_PGDN,    C(KC_DEL),  KC_DEL,  KC_BSPC,    C(KC_BSPC),            _______,
+    _______,    _______,    C(KC_Q),    _______, _______, _______, _______, _______,   KC_PGUP,    KC_UP,       KC_PGDN,    C(KC_DEL),  KC_DEL,  KC_BSPC,    C(KC_BSPC),            _______,
     _______,    _______,    KC_LSFT,    C(KC_S), _______, _______, _______, KC_HOME,   C(KC_LEFT), KC_DOWN,     C(KC_RGHT), KC_END,     KC_END,              _______,               _______,
-    _______,    _______,    _______,    C(KC_Z), C(KC_X), C(KC_C), C(KC_V), C(KC_B),   KC_LEFT,    KC_DOWN,     KC_DOWN,    KC_RGHT,    _______,             _______,   _______,    _______,
-    _______,    _______,    _______,    _______,                   _______,            _______,                 KC_APP,                          _______,    _______,   _______,    _______
+    _______,    _______,    _______,    C(KC_Z), C(KC_X), C(KC_C), C(KC_V), C(KC_B),   KC_LEFT,    KC_DOWN,     KC_DOWN,    KC_RGHT,    KC_APP,              _______,   _______,    _______,
+    _______,    _______,    _______,    _______,                   _______,            _______,                 _______,                         _______,    _______,   _______,    _______
   ),
   [_NUM] = LAYOUT_all(
                 _______,    KC_CALC,    _______, _______, _______, _______, _______,   _______,     KC_PSLS,    KC_PAST,    KC_PMNS,    _______, _______,    _______,                _______,
