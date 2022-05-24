@@ -42,7 +42,7 @@ enum custom_keycodes
     ACTION_1    = TT(_NUM),
     ACTION_2    = MO(_AUX),
     ACTION_3    = SUPER_ALT_TAB,
-    CAPS_LOCK   = MO(_NAV),
+    CAPS_LOCK   = KC_LCTL, // MO(_NAV),
     LEFT_SPACE  = MT(MOD_LCTL, KC_ENT),
     RGHT_SPACE  = KC_SPC,
     FUNC_SPACE  = TT(_NAV),
@@ -69,7 +69,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ACTION_3,   KC_LCTL,    KC_LGUI,    KC_LALT,                   RGHT_SPACE,         FUNC_SPACE,              KC_RALT,                         KC_RCTL,   KC_LEFT,    KC_DOWN,    KC_RGHT
   ),
   [_NAV] = LAYOUT_all(
-                KC_GRAVE,   KC_F1,      KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,     KC_F7,      KC_F8,       KC_F9,      KC_F10,     KC_F11,  KC_F12,     _______,               KC_DEL,
+                KC_GRAVE,   KC_F1,      KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,     KC_F7,      KC_F8,       KC_F9,      KC_F10,     KC_F11,  KC_F12,     _______,               _______,
     _______,    _______,    C(KC_Q),    _______, _______, _______, _______, _______,   KC_PGUP,    KC_UP,       KC_PGDN,    C(KC_DEL),  KC_DEL,  KC_BSPC,    C(KC_BSPC),            _______,
     _______,    _______,    KC_LSFT,    C(KC_S), _______, _______, _______, KC_HOME,   C(KC_LEFT), KC_DOWN,     C(KC_RGHT), KC_END,     KC_END,              _______,               _______,
     _______,    _______,    _______,    C(KC_Z), C(KC_X), C(KC_C), C(KC_V), C(KC_B),   KC_LEFT,    KC_DOWN,     KC_DOWN,    KC_RGHT,    KC_APP,              _______,   _______,    _______,
