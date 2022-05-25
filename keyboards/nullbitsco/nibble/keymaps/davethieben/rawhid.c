@@ -24,8 +24,6 @@ references:
 
 void raw_hid_receive(uint8_t *data, uint8_t length)
 {
-    // uint8_t command[length] = {0};
-    // memcpy(command, data, length);
     char input[32] = {0};
     uint8_t input_len = length > 32 ? 32 : length;
     memcpy(input, data, input_len);
@@ -34,8 +32,11 @@ void raw_hid_receive(uint8_t *data, uint8_t length)
     snprintf(message, sizeof(message), "%d:%s", length, input);
     set_oled_status(message);
 
-    char response[33] = "Hello from Nibble";
-    raw_hid_send((uint8_t *)response, strlen(response));
+    char output[32] = "Hello from Nibble";
+
+    uint8_t response[32] = {0};
+    memcpy(response, output, strlen(output));
+    raw_hid_send(response, 32);
 }
 
 /* WIP:
