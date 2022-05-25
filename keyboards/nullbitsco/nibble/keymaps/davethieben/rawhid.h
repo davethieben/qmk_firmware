@@ -20,9 +20,10 @@
 
 enum hid_command_ids
 {
-    command_oled_enable = 0x80,
+    command_ping = 0x80,
+    command_oled_toggle,
     command_oled_set_message,
-    command_rgb_enable,
+    command_rgb_toggle,
     command_rgb_set_mode
 };
 

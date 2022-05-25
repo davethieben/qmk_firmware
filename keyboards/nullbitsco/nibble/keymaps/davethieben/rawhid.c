@@ -22,7 +22,18 @@ references:
     keyboards\massdrop\ctrl\keymaps\foxx1337\hid_protocol.h
 */
 
-void raw_hid_receive(uint8_t *data, uint8_t length)
+void raw_hid_write(char *output, size_t length)
+{
+    // TODO - if length > 32?
+    if (length > 32)
+        length = 32;
+
+    uint8_t response[32] = {0};
+    memcpy(response, output, length);
+    raw_hid_send(response, 32);
+}
+
+void raw_hid_echo(uint8_t *data, uint8_t length)
 {
     char input[32] = {0};
     uint8_t input_len = length > 32 ? 32 : length;
@@ -32,11 +43,41 @@ void raw_hid_receive(uint8_t *data, uint8_t length)
     snprintf(message, sizeof(message), "%d:%s", length, input);
     set_oled_status(message);
 
-    char output[32] = "Hello from Nibble";
+    raw_hid_write("Hello from Nibble", 32);
+}
 
-    uint8_t response[32] = {0};
-    memcpy(response, output, strlen(output));
-    raw_hid_send(response, 32);
+void set_oled_status_cpy(uint8_t *data, uint8_t length)
+{
+    char message[32];
+    memcpy(message, data, length);
+    set_oled_status(message);
+}
+
+void raw_hid_receive(uint8_t *data, uint8_t length)
+{
+    switch (*data)
+    {
+    case command_ping:
+        raw_hid_write("Hello from Nibble", 32);
+        break;
+
+    case command_oled_toggle:
+        break;
+
+    case command_oled_set_message:
+        set_oled_status_cpy(data + 1, length - 1);
+        break;
+
+    case command_rgb_toggle:
+        break;
+
+    case command_rgb_set_mode:
+        break;
+
+    default:
+        raw_hid_write("Unknown command", 32);
+        break;
+    }
 }
 
 /* WIP:
