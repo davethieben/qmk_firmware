@@ -15,11 +15,11 @@
  */
 #include QMK_KEYBOARD_H
 #include "print.h"
-#include "raw_hid.h"
-
+// locals:
 #include "layers.h"
 #include "layer_lights.h"
 #include "oled_display.h"
+#include "rawhid.h"
 
 // clang-format off
 //      keycode functions:          https://docs.qmk.fm/#/feature_layers
@@ -237,45 +237,6 @@ void matrix_scan_user(void)
         else
         {
             rgb_timer = 0;
-        }
-    }
-}
-
-enum hid_command_ids
-{
-    command_oled_enable = 0x80,
-    command_oled_set_message,
-    command_rgb_enable,
-    command_rgb_set_mode
-};
-
-void raw_hid_receive(uint8_t *data, uint8_t length)
-{
-    // Your code goes here. data is the packet received from host.
-    dprintf("raw_hid_receive: %s", data);
-
-    uint8_t *command_id = &(data[0]);
-    uint8_t *command_data = &(data[1]);
-    switch (*command_id)
-    {
-        case command_oled_enable:
-        {
-            if (command_data[0])
-                oled_off();
-            else
-                oled_on();
-            break;
-        }
-        case command_oled_set_message:
-        {
-            // int msglen = strlen(command_data);
-            set_oled_status((char *)command_data);
-            break;
-        }
-        default:
-        {
-            // used for debugging when building your host application by returning all data back to the host.
-            raw_hid_send(data, length);
         }
     }
 }

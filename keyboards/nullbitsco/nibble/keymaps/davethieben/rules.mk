@@ -13,8 +13,7 @@ TAP_DANCE_ENABLE 			= no
 VELOCIKEY_ENABLE 			= no
 # VIA_ENABLE 				= yes
 WPM_ENABLE 					= no
-
-#RAW_ENABLE = yes
+RAW_ENABLE 					= yes
 
 # Nibble options
 ANSI_ENABLE = 		yes
@@ -26,4 +25,5 @@ BIG_LED_ENABLE = 	no
 
 SRC += oled_display.c \
 	   layer_lights.c \
-	   encoder.c
+	   encoder.c \
+	   rawhid.c
