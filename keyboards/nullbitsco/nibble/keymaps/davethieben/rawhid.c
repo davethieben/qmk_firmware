@@ -15,6 +15,7 @@
  */
 #include "quantum.h"
 #include "rawhid.h"
+#include "rgblight.h"
 
 /*
 references:
@@ -30,6 +31,7 @@ void raw_hid_write(char *output, size_t length)
 
     uint8_t response[32] = {0};
     memcpy(response, output, length);
+
     raw_hid_send(response, 32);
 }
 
@@ -53,31 +55,76 @@ void set_oled_status_cpy(uint8_t *data, uint8_t length)
     set_oled_status(message);
 }
 
+void raw_hid_send_log(uint8_t command_id, char* message)
+{
+    uint8_t n_buffer[32] = {0};
+    memcpy(n_buffer, message, strlen(message));
+    raw_hid_send_command(command_id, n_buffer, strlen(message));
+}
+
+void raw_hid_send_debug(char* message)
+{
+    raw_hid_send_log(command_log_debug, message);
+}
+
 void raw_hid_receive(uint8_t *data, uint8_t length)
 {
-    switch (*data)
+    if (length < 1)
+        return;
+
+    uint8_t command = data[0];
+    data = data + 1;
+    length = length - 1;
+
+    uint8_t n_buffer[32] = {0};
+    char s_buffer[32] = {0};
+
+    switch (command)
     {
     case command_ping:
-        raw_hid_write("Hello from Nibble", 32);
+        raw_hid_send_debug("Hello from Nibble");
         break;
 
-    case command_oled_toggle:
-        break;
-
-    case command_oled_set_message:
-        set_oled_status_cpy(data + 1, length - 1);
-        break;
-
+    // RGB commands:
     case command_rgb_toggle:
+        rgblight_toggle();
+        raw_hid_send_debug("OK");
         break;
 
     case command_rgb_set_mode:
+        rgblight_mode(data[0]);
+        raw_hid_send_debug("OK");
+        break;
+
+    // OLED commands:
+    case command_oled_toggle:
+        oled_toggle();
+        raw_hid_send_debug("OK");
+        break;
+
+    case command_oled_diagnostic:
+        raw_hid_send_log(command_log_info, "OLED Data: ");
+        break;
+
+    case command_oled_set_message:
+        memcpy(s_buffer, data, length);
+        set_oled_status(s_buffer);
+        raw_hid_send_debug("OK");
         break;
 
     default:
-        raw_hid_write("Unknown command", 32);
+        memcpy(n_buffer, "Unknown command", 15);
+        raw_hid_send_command(command_log_error, n_buffer, 15);
         break;
     }
+}
+
+void raw_hid_send_command(uint8_t command_id, uint8_t *data, uint8_t length)
+{
+    uint8_t output[32] = {0};
+    output[0] = command_id;
+    memcpy(output + 1, data, length);
+    raw_hid_send(output, 32);
 }
 
 /* WIP:

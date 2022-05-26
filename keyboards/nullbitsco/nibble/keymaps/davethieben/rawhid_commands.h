@@ -13,12 +13,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#if NET
+namespace MKHighway {
+public
+#else
 #pragma once
-#include QMK_KEYBOARD_H
-#include "raw_hid.h"
-#include "rawhid_commands.h"
-#include "oled_display.h"
+#endif
 
-void raw_hid_receive(uint8_t *data, uint8_t length);
+enum hid_command_id
+{
+    command_ping = 0x40,
+    command_log_debug,
+    command_log_info,
+    command_log_error,
 
-void raw_hid_send_command(uint8_t command_id, uint8_t *data, uint8_t length);
+    command_key_send = 0x60,
+
+    command_rgb_toggle = 0x70,
+    command_rgb_set_mode,
+
+    command_oled_toggle = 0x80,
+    command_oled_diagnostic,
+    command_oled_set_message,
+
+};
+
+#if NET
+}
+#endif

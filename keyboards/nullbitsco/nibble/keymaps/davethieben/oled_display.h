@@ -34,6 +34,8 @@ void set_oled_status(char status[]);
 
 void reset_oled_status(void);
 
+void oled_toggle(void);
+
 void oled_write_line(char line[]);
 
 void oled_process_record_encoder(uint16_t keycode);

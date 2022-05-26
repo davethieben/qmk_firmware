@@ -58,11 +58,10 @@ bool oled_task_user(void)
 }
 /* :Quantum OLED driver functions */
 
-
 void set_oled_mode(oled_mode_t mode)
 {
     oled_mode = mode;
-    //dprintf("OLED Mode: %04X", mode);
+    // dprintf("OLED Mode: %04X", mode);
 }
 
 void set_oled_status(char status[])
@@ -70,13 +69,25 @@ void set_oled_status(char status[])
     oled_status_timer = timer_read32();
     strcpy(oled_status, status);
 
-    //dprintf("OLED Status: %s", oled_status);
+    // dprintf("OLED Status: %s", oled_status);
 }
 
 void reset_oled_status(void)
 {
     strcpy(oled_status, EMPTY_STATUS);
-    //dprintf("OLED Status Reset");
+    // dprintf("OLED Status Reset");
+}
+
+void oled_toggle()
+{
+    if (is_oled_on())
+    {
+        oled_off();
+    }
+    else
+    {
+        oled_on();
+    }
 }
 
 void oled_process_record_encoder(uint16_t keycode)
@@ -112,12 +123,12 @@ void oled_process_record_keymap(uint16_t keycode)
         }
         break;
 
-    // case OLED_TOG:
-    //     if (is_oled_on())
-    //         oled_off();
-    //     else
-    //         oled_on();
-    //     break;
+        // case OLED_TOG:
+        //     if (is_oled_on())
+        //         oled_off();
+        //     else
+        //         oled_on();
+        //     break;
     }
 }
 
@@ -162,23 +173,22 @@ void render_idle(void)
 
     // line 1:
     oled_write_P(PSTR("Nibble        "), false); // 14 chars
-    render_layer(); // 4 chars
+    render_layer();                              // 4 chars
     oled_write_line("");
 
     // line 2:
     oled_write_line(oled_status);
 
     // line 3:
-    //oled_write_line("");
+    // oled_write_line("");
 
     // line 4:
-    //char *current_time = get_time();
-    //oled_write_line(current_time);
+    // char *current_time = get_time();
+    // oled_write_line(current_time);
 
-    //oled_write_P(PSTR("    WPM: "), false);
-    //render_wpm();
-    //oled_write_line("");
-
+    // oled_write_P(PSTR("    WPM: "), false);
+    // render_wpm();
+    // oled_write_line("");
 }
 
 /** needs fixed - where to get current date/time?
